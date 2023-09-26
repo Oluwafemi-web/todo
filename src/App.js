@@ -2,7 +2,7 @@ import Checkbox from "./components/Checkbox";
 import TodoForm from "./components/TodoForm";
 import Container from "./UI/Container";
 import "./App.css";
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import TodoContext from "./Context/todo-context";
 
 function App() {
@@ -11,6 +11,12 @@ function App() {
 
   const [additem, setAddItem] = useState(false);
   const [completed, setCompleted] = useState([]);
+  const [isAll, setIsAll] = useState(true);
+  const [isCompleted, setIsCompleted] = useState(false);
+
+  useEffect(() => {
+    ctx.setEvents(localStorage.getItem("mylist"));
+  }, []);
   const addTodoHandler = () => {
     setAddItem(true);
   };
@@ -20,7 +26,6 @@ function App() {
   const addEventHandler = (e) => {
     e.preventDefault();
     ctx.setEvents((prevArr) => [...prevArr, TodoRef.current.value]);
-    console.log(ctx, TodoRef.current.value);
     setAddItem(false);
   };
   const removeEventHandler = (itemToRemove) => {
@@ -29,9 +34,23 @@ function App() {
 
   const completedEventHandler = (finished, event) => {
     if (event.target.checked) {
-      setCompleted((prevarr) => [...prevarr, finished]);
+      setCompleted((prevarr) => {
+        if (completed.includes(finished)) return;
+        return [...prevarr, finished];
+      });
+    } else {
+      setCompleted((prevArr) => prevArr.filter((item) => item !== finished));
     }
     console.log(completed);
+  };
+
+  const isAllHandler = () => {
+    setIsAll(true);
+    setIsCompleted(false);
+  };
+  const isCompletedHandler = () => {
+    setIsAll(false);
+    setIsCompleted(true);
   };
 
   return (
@@ -51,14 +70,25 @@ function App() {
             </div>
           </div>
         ) : (
-          ctx.events.map((item, index) => (
-            <Checkbox
-              item={item}
-              key={index}
-              removeItem={removeEventHandler}
-              onChange={completedEventHandler}
-            />
-          ))
+          <>
+            {isAll &&
+              ctx.events.map((item, index) => (
+                <Checkbox
+                  item={item}
+                  key={index}
+                  removeItem={removeEventHandler}
+                  onChange={completedEventHandler}
+                />
+              ))}
+            {isCompleted &&
+              completed.map((item, index) => (
+                <div className="todo-wrapper" key={index}>
+                  <div className="item">
+                    <label>{item}</label>
+                  </div>
+                </div>
+              ))}
+          </>
         )}
         <ul className="nav">
           <li>
@@ -70,12 +100,18 @@ function App() {
           </li>
           <li>
             <ul className="categories">
-              <li className="active">All</li>
-              <li>Active</li>
-              <li>Completed</li>
+              <li className={`${isAll ? "active" : ""}`} onClick={isAllHandler}>
+                All
+              </li>
+              {/* <li>Active</li> */}
+              <li
+                className={`${isCompleted ? "active" : ""}`}
+                onClick={isCompletedHandler}
+              >
+                Completed
+              </li>
             </ul>
           </li>
-          <li>Clear completed</li>
         </ul>
       </Container>
       {additem && (
