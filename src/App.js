@@ -15,7 +15,28 @@ function App() {
   const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
-    ctx.setEvents(localStorage.getItem("mylist"));
+    // Retrieve the existing localStorage value
+    const existingData = localStorage.getItem("mylist");
+
+    // Parse the existing data or use an empty array as a default value
+    const existingEvents = JSON.parse(existingData) || [];
+
+    // Filter out events from ctx.events that are already in existingEvents
+    const newEvents = ctx.events.filter(
+      (event) => !existingEvents.includes(event)
+    );
+
+    // Merge the newEvents with the existingEvents
+    const updatedEvents = [...existingEvents, ...newEvents];
+
+    // Store the updated events in localStorage
+    localStorage.setItem("mylist", JSON.stringify(updatedEvents));
+  }, [ctx.events]);
+
+  useEffect(() => {
+    let fetcheditems = localStorage.getItem("mylist");
+    let parseditems = JSON.parse(fetcheditems);
+    ctx.setEvents(parseditems);
   }, []);
   const addTodoHandler = () => {
     setAddItem(true);
@@ -41,7 +62,6 @@ function App() {
     } else {
       setCompleted((prevArr) => prevArr.filter((item) => item !== finished));
     }
-    console.log(completed);
   };
 
   const isAllHandler = () => {

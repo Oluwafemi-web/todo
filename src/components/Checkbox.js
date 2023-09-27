@@ -1,5 +1,5 @@
 import { MdDeleteOutline } from "react-icons/md";
-export default function Checkbox(props, ref) {
+export default function Checkbox(props) {
   return (
     <div className="todo-wrapper">
       <div className="item">
