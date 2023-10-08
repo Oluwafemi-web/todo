@@ -46,7 +46,7 @@ function App() {
   };
   const addEventHandler = (e) => {
     e.preventDefault();
-    ctx.setEvents((prevArr) => [...prevArr, TodoRef.current.value]);
+    ctx.setEvents((prevArr) => [TodoRef.current.value, ...prevArr]);
     setAddItem(false);
   };
   const removeEventHandler = (itemToRemove) => {
