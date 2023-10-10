@@ -11,7 +11,7 @@ export default function Checkbox(props) {
         />
         <label htmlFor="task">{props.item}</label>
       </div>
-      <button onClick={() => props.removeItem(props.item)}>
+      <button onClick={() => props.removeItem(props.id)}>
         <MdDeleteOutline />
       </button>
     </div>

@@ -22,10 +22,9 @@ function App() {
     const existingEvents = JSON.parse(existingData) || [];
 
     // Filter out events from ctx.events that are already in existingEvents
-    const newEvents = ctx.events.filter(
-      (event) => !existingEvents.includes(event)
+    const newEvents = ctx.events.filter((event) =>
+      existingEvents.includes(event.todo)
     );
-
     // Merge the newEvents with the existingEvents
     const updatedEvents = [...existingEvents, ...newEvents];
 
@@ -46,11 +45,14 @@ function App() {
   };
   const addEventHandler = (e) => {
     e.preventDefault();
-    ctx.setEvents((prevArr) => [TodoRef.current.value, ...prevArr]);
+    ctx.setEvents((prevArr) => [
+      { id: TodoRef.current.value, todo: TodoRef.current.value },
+      ...prevArr,
+    ]);
     setAddItem(false);
   };
-  const removeEventHandler = (itemToRemove) => {
-    ctx.setEvents((prevArr) => prevArr.filter((item) => item !== itemToRemove));
+  const removeEventHandler = (id) => {
+    ctx.setEvents((prevarr) => prevarr.filter((event) => id !== event.id));
   };
 
   const completedEventHandler = (finished, event) => {
@@ -94,7 +96,8 @@ function App() {
             {isAll &&
               ctx.events.map((item, index) => (
                 <Checkbox
-                  item={item}
+                  item={item.todo}
+                  id={item.id}
                   key={index}
                   removeItem={removeEventHandler}
                   onChange={completedEventHandler}
