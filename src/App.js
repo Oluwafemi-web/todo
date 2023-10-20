@@ -7,7 +7,7 @@ import TodoContext from "./Context/todo-context";
 
 function App() {
   // const [additem, setAddItem] = useState(false);
-  const [completed, setCompleted] = useState([]);
+  // const [completed, setCompleted] = useState([]);
   const [isAll, setIsAll] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -67,7 +67,6 @@ function App() {
   const TodoRef = useRef(null);
 
   const [additem, setAddItem] = useState(false);
-  console.log(ctx.events);
 
   useEffect(() => {
     // Retrieve the existing localStorage value
@@ -91,7 +90,8 @@ function App() {
   const addEventHandler = (e) => {
     e.preventDefault();
     const newTask = {
-      id: Math.random(0, 100), // Generate a unique ID, you can use other methods for this
+      id: Math.random(0, 100),
+      completed: false, // Generate a unique ID, you can use other methods for this
       todo: TodoRef.current.value,
     };
     ctx.setEvents((prevArr) => [newTask, ...prevArr]);
@@ -109,17 +109,31 @@ function App() {
     localStorage.setItem("mylist", JSON.stringify(updatedEvents));
   };
 
-  const completedEventHandler = (taskId, event) => {
-    setCompleted((prevCompleted) => {
-      if (event.target.checked) {
-        return [...prevCompleted, taskId];
-      } else {
-        return prevCompleted.filter(
-          (completedTaskId) => completedTaskId !== taskId
-        );
-      }
+  // const completedEventHandler = (taskId, event) => {
+  //   setCompleted((prevCompleted) => {
+  //     if (event.target.checked) {
+  //       return [...prevCompleted, taskId];
+  //     } else {
+  //       return prevCompleted.filter(
+  //         (completedTaskId) => completedTaskId !== taskId
+  //       );
+  //     }
+  //   });
+  // };
+  const completedEventHandler = (taskId, events) => {
+    ctx.setEvents((prevArr) => {
+      prevArr.forEach((event) => {
+        if (event.id === taskId) {
+          if (events.target.checked) {
+            event.completed = true;
+            console.log(event.completed);
+          }
+        } else return event;
+      });
+      return prevArr;
     });
   };
+
   const isAllHandler = () => {
     setIsAll(true);
     setIsCompleted(false);
@@ -148,39 +162,43 @@ function App() {
         ) : (
           <>
             {isAll &&
-              ctx.events.map((item, index) => (
+              ctx.events.map((item) => (
                 <Checkbox
                   item={item.todo}
                   id={item.id}
+                  checked={item.completed}
                   key={item.id}
                   removeItem={removeEventHandler}
                   onChange={completedEventHandler}
                 />
               ))}
             {isCompleted &&
-              completed.map((item, index) => (
-                <div className="todo-wrapper" key={index}>
-                  <div className="item">
-                    <label>{item}</label>
+              ctx.events
+                .filter((event) => event.completed === true)
+                .map((item) => (
+                  <div className="todo-wrapper" key={item.id}>
+                    <div className="item">
+                      <label>{item.todo}</label>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
           </>
         )}
         <ul className="nav">
-          <li>
-            {ctx.events.length === 0
-              ? "All done!"
-              : `${ctx.events.length} ${
-                  ctx.events.length > 1 ? "Items" : "Item"
-                } left`}
-          </li>
+          {isAll && (
+            <li>
+              {ctx.events.length === 0
+                ? "All done!"
+                : `${ctx.events.length} ${
+                    ctx.events.length > 1 ? "Items" : "Item"
+                  } left`}
+            </li>
+          )}
           <li>
             <ul className="categories">
               <li className={`${isAll ? "active" : ""}`} onClick={isAllHandler}>
                 All
               </li>
-              {/* <li>Active</li> */}
               <li
                 className={`${isCompleted ? "active" : ""}`}
                 onClick={isCompletedHandler}

@@ -7,7 +7,7 @@ export default function Checkbox(props) {
           type="checkbox"
           id="task"
           className="checkbox-round"
-          onChange={(e) => props.onChange(props.item, e)}
+          onChange={(e) => props.onChange(props.id, e)}
         />
         <label htmlFor="task">{props.item}</label>
       </div>
