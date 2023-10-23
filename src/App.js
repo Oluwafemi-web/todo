@@ -11,58 +11,6 @@ function App() {
   const [isAll, setIsAll] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  // useEffect(() => {
-  //   // Retrieve the existing localStorage value
-  //   const existingData = localStorage.getItem("mylist");
-
-  //   // Parse the existing data or use an empty array as a default value
-  //   const existingEvents = JSON.parse(existingData) || [];
-
-  //   // Filter out events from ctx.events that are already in existingEvents
-  //   const newEvents = ctx.events.filter((event) =>
-  //     existingEvents.includes(event.todo)
-  //   );
-  //   // Merge the newEvents with the existingEvents
-  //   const updatedEvents = [...existingEvents, ...newEvents];
-
-  //   // Store the updated events in localStorage
-  //   localStorage.setItem("mylist", JSON.stringify(updatedEvents));
-  // }, [ctx.events]);
-
-  // useEffect(() => {
-  //   let fetcheditems = localStorage.getItem("mylist");
-  //   let parseditems = JSON.parse(fetcheditems);
-  //   ctx.setEvents(parseditems);
-  // }, []);
-  // const addTodoHandler = () => {
-  //   setAddItem(true);
-  // };
-  // const closeModalHandler = () => {
-  //   setAddItem(false);
-  // };
-  // const addEventHandler = (e) => {
-  //   e.preventDefault();
-  //   ctx.setEvents((prevArr) => [
-  //     { id: TodoRef.current.value, todo: TodoRef.current.value },
-  //     ...prevArr,
-  //   ]);
-  //   setAddItem(false);
-  // };
-  // const removeEventHandler = (id) => {
-  //   ctx.setEvents((prevarr) => prevarr.filter((event) => id !== event.id));
-  // };
-
-  // const completedEventHandler = (finished, event) => {
-  //   if (event.target.checked) {
-  //     setCompleted((prevarr) => {
-  //       if (completed.includes(finished)) return;
-  //       return [...prevarr, finished];
-  //     });
-  //   } else {
-  //     setCompleted((prevArr) => prevArr.filter((item) => item !== finished));
-  //   }
-  // };
-
   const ctx = useContext(TodoContext);
   const TodoRef = useRef(null);
 
@@ -109,28 +57,27 @@ function App() {
     localStorage.setItem("mylist", JSON.stringify(updatedEvents));
   };
 
-  // const completedEventHandler = (taskId, event) => {
-  //   setCompleted((prevCompleted) => {
-  //     if (event.target.checked) {
-  //       return [...prevCompleted, taskId];
-  //     } else {
-  //       return prevCompleted.filter(
-  //         (completedTaskId) => completedTaskId !== taskId
-  //       );
-  //     }
+  // const completedEventHandler = (taskId, events) => {
+  //   ctx.setEvents((prevArr) => {
+  //     prevArr.forEach((event) => {
+  //       if (event.id === taskId) {
+  //         if (events.target.checked) {
+  //           event.completed = true;
+  //           console.log(event.completed);
+  //         }
+  //       } else return event;
+  //     });
+  //     return prevArr;
   //   });
   // };
   const completedEventHandler = (taskId, events) => {
     ctx.setEvents((prevArr) => {
-      prevArr.forEach((event) => {
+      return prevArr.map((event) => {
         if (event.id === taskId) {
-          if (events.target.checked) {
-            event.completed = true;
-            console.log(event.completed);
-          }
-        } else return event;
+          return { ...event, completed: events.target.checked };
+        }
+        return event;
       });
-      return prevArr;
     });
   };
 

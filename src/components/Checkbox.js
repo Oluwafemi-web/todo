@@ -6,6 +6,7 @@ export default function Checkbox(props) {
         <input
           type="checkbox"
           id="task"
+          checked={props.checked}
           className="checkbox-round"
           onChange={(e) => props.onChange(props.id, e)}
         />
